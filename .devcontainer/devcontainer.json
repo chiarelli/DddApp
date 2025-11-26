@@ -1,0 +1,26 @@
+{
+  "name": "Yii2 PHP DevContainer",
+  "dockerComposeFile": "../docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/var/www/html",
+
+  // Sobrescreve user para evitar permissões do root
+  "remoteUser": "vscode",
+
+  "settings": {
+    "php.validate.executablePath": "/usr/local/bin/php",
+    "editor.formatOnSave": true,
+    "files.autoSave": "afterDelay"
+  },
+
+  "extensions": [
+    "bmewburn.vscode-intelephense-client",
+    "xdebug.php-debug",
+    "ms-azuretools.vscode-docker"
+  ],
+
+  // Se quiser rodar composer install automaticamente:
+  "postCreateCommand": "composer install || true",
+
+  "shutdownAction": "stopCompose"
+}

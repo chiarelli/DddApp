@@ -1,0 +1,23 @@
+# === Yii2 Basic (dentro de src/Infrastructure/Yii) ===
+src/Infrastructure/Yii/vendor/
+src/Infrastructure/Yii/runtime/
+src/Infrastructure/Yii/web/assets/
+src/Infrastructure/Yii/environments/
+src/Infrastructure/Yii/.env
+src/Infrastructure/Yii/.env.local
+src/Infrastructure/Yii/.env.*.local
+
+# Arquivos temporários
+*.log
+*.cache
+*.tmp
+
+# Diretório para dados temporários ou storage local (caso crie)
+var/*
+
+# Arquivos do Docker (caso existam)
+docker/*.log
+docker/*.pid
+
+# Ignorar configurações do VSCode
+.vscode/
