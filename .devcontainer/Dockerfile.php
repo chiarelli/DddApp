@@ -24,9 +24,15 @@ RUN a2enmod rewrite
 # Instala Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
+# Copia configuração personalizada do Apache
+COPY .devcontainer/apache.conf /etc/apache2/sites-available/yii.conf
+
 # Cria usuário vscode para evitar root
 RUN useradd -ms /bin/bash vscode \
-    && chown -R vscode:vscode /var/www/html
+    && chown -R vscode:vscode /var/www/html \
+    # Habilita o site e desabilita o default
+    && a2dissite 000-default.conf && a2ensite yii.conf
+
 USER vscode
 
 WORKDIR /var/www/html
