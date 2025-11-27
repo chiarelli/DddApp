@@ -16,10 +16,14 @@ Implementar tela de login + criação de produto usando DDD Lite.
 - [x] Criar migrations iniciais (product_type, product)
 - [x] Gerar AR via Gii
 - [x] Criar Domain/Repository interface
-- [ ] Implementar Repository na Infra (usando AR)
-- [ ] Criar UseCase `CreateProduct`
+- [ ] Implementar Repositories em Infra (usando AR)
+- [x] Criar UseCase `CreateProduct`
 - [ ] Criar Controller `ProductController` e views (login + create)
-- [ ] Criar testes unitários para UseCase e Repository
+- [x] Criar testes unitários para UseCase e Repository
+- [ ] Gerar Controllers
+- [ ] Gerar FormModels
+- [ ] Tela de login para permitir que o usuário faça login com login e senha
+- [ ] Tela de criação de produto
 
 ## Motivações:
 
@@ -50,3 +54,16 @@ Foram criados os repositórios de Domain para as entidades Product e ProductType
   - a futura troca do framework de persistência por outro seja feita sem precisar refatorar o código cliente, apenas alterando a implementação;
   - haja aderência ao princípio "D" do SOLID (Dependency Inversion);
   - a implementação real seja facilmente substituída por mocks em testes de UseCases.
+
+#### 4. Criar UseCase `CreateProduct` e Criar testes unitários para UseCase e Repository
+
+- Definido os DTOs para mapeamento dos objetos de dominio, objetivo:
+  - atuar como fronteira explícita do caso de uso (entrada/saída), mantendo o Domain isolado de formatos de transporte e apresentação.
+
+- O caso de uso `CreateProductUseCase` foi criado na aplicação. Objetivo principal:
+  - centralizar a orquestração, carregar ProductType, calcular next sequence, gerar code via regras do Domain, criar entidade e persistir.
+
+- Teste de unidade de `CreateProductUseCase`. Com o objetivo de verificar:
+  - o comportamento e as invariantes do fluxo (caminho feliz, ProductType inexistente, sequência excedente), usando repositórios fake/mocks para isolar lógica de orquestração do I/O.
+
+> **Benefícios imediatos**: código testável, regras de domínio centralizadas, menor acoplamento ao framework, facilitação de futuras implementações infra (AR/DB) e de estratégias de concorrência/transação.
