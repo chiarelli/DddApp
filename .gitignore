@@ -1,3 +1,6 @@
+# Raiz do projeto
+vendor/*
+
 # === Yii2 Basic (dentro de src/Infrastructure/Yii) ===
 src/Infrastructure/Yii/vendor/
 src/Infrastructure/Yii/runtime/
