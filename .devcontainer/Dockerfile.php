@@ -13,6 +13,7 @@ RUN apt-get update && apt-get install -y \
     libfreetype6-dev \
     libssl-dev \
     libmemcached-dev \
+    nano \
     && docker-php-ext-install pdo pdo_mysql intl mbstring zip xml gd
 
 # Instala extensões do PECL

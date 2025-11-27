@@ -3,24 +3,25 @@
   "dockerComposeFile": "../docker-compose.yml",
   "service": "app",
   "workspaceFolder": "/var/www/html",
-
   // Sobrescreve user para evitar permissões do root
   "remoteUser": "vscode",
-
   "settings": {
     "php.validate.executablePath": "/usr/local/bin/php",
     "editor.formatOnSave": true,
     "files.autoSave": "afterDelay"
   },
-
   "extensions": [
     "bmewburn.vscode-intelephense-client",
     "xdebug.php-debug",
-    "ms-azuretools.vscode-docker"
+    "ms-azuretools.vscode-docker",
+    "steoates.autoimport",
+    "hossaini.bootstrap-intellisense",
+    "DEVSENSE.composer-php-vscode",
+    "mhutchie.git-graph",
+    "DEVSENSE.phptools-vscode",
+    "grogdunn.netbeans-keybindings",
   ],
-
   // Se quiser rodar composer install automaticamente:
   "postCreateCommand": "composer install || true",
-
   "shutdownAction": "stopCompose"
 }
