@@ -15,7 +15,7 @@ Implementar tela de login + criação de produto usando DDD Lite.
 ## Checklist
 - [x] Criar migrations iniciais (product_type, product)
 - [x] Gerar AR via Gii
-- [ ] Criar Domain/Repository interface
+- [x] Criar Domain/Repository interface
 - [ ] Implementar Repository na Infra (usando AR)
 - [ ] Criar UseCase `CreateProduct`
 - [ ] Criar Controller `ProductController` e views (login + create)
@@ -35,6 +35,18 @@ Implementar tela de login + criação de produto usando DDD Lite.
 
 #### 2. Gerar Active Recrods via Gii
 
-- Foram geradas as classes **Active Record** de `Product` e `ProductType` dentro da camada de Infraestrutura.
+Foram geradas as classes **Active Record** de `Product` e `ProductType` dentro da camada de Infraestrutura.
 - Esses Active Records serão usados apenas na Infra para mapeamento e persistência (AR ↔ Entidade do Domain). Eles não devem conter regras de negócio.
 - Todas as regras de negócio e invariantes ficam nas entidades de Domain e na lógica de orquestração da camada Application (UseCases). A camada Application usa DTOs na fronteira (entrada/saída) e repositórios do Domain como portas para a Infra.
+
+#### 3. Criar Domain/Repository interface
+
+Foram criados os repositórios de Domain para as entidades Product e ProductType.
+
+- Seguindo DDD, os repositórios representam coleções de entidades, fornecendo métodos de consulta e persistência sem expor detalhes do banco.
+
+- Essa estratégia possibilita que:
+  - a camada de domínio permaneça independente do framework de persistência;
+  - a futura troca do framework de persistência por outro seja feita sem precisar refatorar o código cliente, apenas alterando a implementação;
+  - haja aderência ao princípio "D" do SOLID (Dependency Inversion);
+  - a implementação real seja facilmente substituída por mocks em testes de UseCases.
