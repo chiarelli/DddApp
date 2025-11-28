@@ -18,14 +18,16 @@ Implementar tela de login + criação de produto usando DDD Lite.
 - [x] Criar Domain/Repository interface
 - [x] Implementar Repositories em Infra (usando AR)
 - [x] Criar UseCase `CreateProduct`
-- [ ] Criar Controller `ProductController` e views (login + create)
+- [x] Criar Controller `ProductController` e views (login + create)
 - [x] Criar testes unitários para UseCase e Repository
 - [x] Gerar Controller responsavel por view de autenticação
 - [x] Gerar FormModel para a tela de autenticação
 - [x] Tela de login para permitir que o usuário faça login com login e senha
-- [ ] Gerar Controller responsável pela criação do produto
-- [ ] Gerar FormModel da criação de produto
-- [ ] Tela de criação de produto
+- [x] Gerar Controller responsável pela criação do produto
+- [x] Gerar FormModel da criação de produto
+- [x] Tela de criação de produto
+- [ ] Testes de Integração Funcional: Testes de Login, Testes de Criação de Produto e Testes de Autorização
+
 
 ## Motivações:
 
@@ -82,3 +84,14 @@ Conforme requisitos do `exercise-1` sobre fluxo de autenticação, foram feitas 
   - Após login, usuário autenticado é redirecionado automaticamente para view (ainda um 'placeholder') na rota "product/create"
 
   - View da rota "product/create" já está protegida contra acesso de usuários não autenticados.
+
+#### 7. Funcionalidade de Criação de Produtos
+
+- Gerado o formulário `CreateProductForm`: Esse formulário será usado na view para criar produtos, conforme os campos na doc de **exercise-1**: nome, preço e tipo de produto (dropdown de registros de `ProductTypeAR`).
+
+- O fluxo de criação de um produto fica assim:
+  - formulário organizado na view "create.php" dispara a requisição via HTTP POST;
+  - ProductController::actionCreate intercepta essa requisição, prepara o payload e passa o DTO de requisição para CreateProductUseCase executar o use case;
+  - o use case realiza toda a orquestração principal da aplicação: invoca entidades de domínio, usa repositórios, valida dados e realiza os mapeamentos de objetos de fronteira;
+  - após terminar seu processamento CreateProductUseCase devolve o DTO de resposta para o ProductController;
+  - o controller devolve o resultado para a view renderizar para o usuário.
