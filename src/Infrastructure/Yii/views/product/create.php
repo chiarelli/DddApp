@@ -13,7 +13,7 @@ $this->title = 'Criação de Produtos';
     <h1><?= \yii\helpers\Html::encode($this->title) ?></h1>
 
     <div class="mt-4">
-        <?php $form = ActiveForm::begin(); ?>
+        <?php $form = ActiveForm::begin(['id' => 'create-product-form']); ?>
 
         <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
 
