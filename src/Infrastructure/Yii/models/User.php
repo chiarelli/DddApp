@@ -2,103 +2,105 @@
 
 namespace app\models;
 
-class User extends \yii\base\BaseObject implements \yii\web\IdentityInterface
+use Yii;
+use yii\base\NotSupportedException;
+use yii\db\ActiveRecord;
+use yii\web\IdentityInterface;
+
+/**
+ * User ActiveRecord para autenticação baseada em banco.
+ *
+ * Campos principais (ver migration de schema):
+ * - id (int, PK)
+ * - username (string, único)
+ * - password_hash (string)
+ * - auth_key (string)
+ * - status (string|null)
+ * - created_at, updated_at (int|null)
+ */
+class User extends ActiveRecord implements IdentityInterface
 {
-    public $id;
-    public $username;
-    public $password;
-    public $authKey;
-    public $accessToken;
+    public static function tableName()
+    {
+        return '{{%user}}';
+    }
 
-    private static $users = [
-        '100' => [
-            'id' => '100',
-            'username' => 'admin',
-            'password' => 'admin',
-            'authKey' => 'test100key',
-            'accessToken' => '100-token',
-        ],
-        '101' => [
-            'id' => '101',
-            'username' => 'demo',
-            'password' => 'demo',
-            'authKey' => 'test101key',
-            'accessToken' => '101-token',
-        ],
-    ];
-
-
-    /**
-     * {@inheritdoc}
-     */
+    // IdentityInterface
     public static function findIdentity($id)
     {
-        return isset(self::$users[$id]) ? new static(self::$users[$id]) : null;
+        return static::findOne($id);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    // Não utilizamos token de acesso neste exercício.
     public static function findIdentityByAccessToken($token, $type = null)
     {
-        foreach (self::$users as $user) {
-            if ($user['accessToken'] === $token) {
-                return new static($user);
-            }
-        }
-
-        return null;
+        throw new NotSupportedException('findIdentityByAccessToken is not implemented.');
     }
 
-    /**
-     * Finds user by username
-     *
-     * @param string $username
-     * @return static|null
-     */
-    public static function findByUsername($username)
+    public static function findByUsername(string $username): ?self
     {
-        foreach (self::$users as $user) {
-            if (strcasecmp($user['username'], $username) === 0) {
-                return new static($user);
-            }
-        }
-
-        return null;
+        return static::findOne(['username' => $username]);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getId()
     {
         return $this->id;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getAuthKey()
+    public function getAuthKey(): ?string
     {
-        return $this->authKey;
+        return $this->auth_key;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function validateAuthKey($authKey)
+    public function validateAuthKey($authKey): bool
     {
-        return $this->authKey === $authKey;
+        return $this->auth_key === $authKey;
     }
 
-    /**
-     * Validates password
-     *
-     * @param string $password password to validate
-     * @return bool if password provided is valid for current user
-     */
-    public function validatePassword($password)
+    public function validatePassword(string $password): bool
     {
-        return $this->password === $password;
+        if (empty($this->password_hash)) {
+            return false;
+        }
+        return Yii::$app->security->validatePassword($password, $this->password_hash);
+    }
+
+    // Helpers para administração/seed
+    public function setPassword(string $password): void
+    {
+        $this->password_hash = Yii::$app->security->generatePasswordHash($password);
+    }
+
+    public function generateAuthKey(): void
+    {
+        $this->auth_key = Yii::$app->security->generateRandomString();
+    }
+
+    public function rules()
+    {
+        return [
+            [['username', 'password_hash', 'auth_key', 'gender'], 'required'],
+            [['username'], 'string', 'max' => 255],
+            [['password_hash'], 'string', 'max' => 255],
+            [['auth_key'], 'string', 'max' => 32],
+            [['status'], 'string', 'max' => 255],
+            [['username'], 'unique'],
+            [['created_at', 'updated_at', 'created_by', 'updated_by'], 'integer'],
+            [['nicename', 'fullname'], 'string', 'max' => 255],
+            [['gender'], 'string', 'max' => 1],
+            [['password_reset_token', 'verification_token'], 'string', 'max' => 255],
+        ];
+    }
+
+    public function beforeSave($insert)
+    {
+        if ($insert && empty($this->auth_key)) {
+            $this->generateAuthKey();
+        }
+        $this->updated_at = time();
+        if ($insert && empty($this->created_at)) {
+            $this->created_at = $this->updated_at;
+        }
+        return parent::beforeSave($insert);
     }
 }

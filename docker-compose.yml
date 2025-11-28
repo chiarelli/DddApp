@@ -22,6 +22,8 @@ services:
       MYSQL_PASSWORD: yii2
     ports:
       - "3306:3306"
+    volumes:
+      - ./.devcontainer/mysql-init.sql:/docker-entrypoint-initdb.d/mysql-init.sql
 
   adminer:
     image: adminer

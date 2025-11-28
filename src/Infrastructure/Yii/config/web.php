@@ -4,6 +4,14 @@ $params = require __DIR__ . '/params.php';
 $db = require __DIR__ . '/db.php';
 
 $config = [
+    // Mapeamentos do container para injeção de dependências (UseCases -> Repositories)
+    'container' => [
+        'definitions' => [
+            \Chiarelli\DddApp\Domain\Repository\ProductRepositoryInterface::class => \Chiarelli\DddApp\Infrastructure\Repository\YiiProductRepository::class,
+            \Chiarelli\DddApp\Domain\Repository\ProductTypeRepositoryInterface::class => \Chiarelli\DddApp\Infrastructure\Repository\YiiProductTypeRepository::class,
+        ],
+    ],
+
     'id' => 'basic',
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
@@ -20,8 +28,10 @@ $config = [
             'class' => 'yii\caching\FileCache',
         ],
         'user' => [
+            // Agora aponta para o AR app\models\User (DB)
             'identityClass' => 'app\models\User',
             'enableAutoLogin' => true,
+            // identityCookie reforçado em produção mais abaixo
         ],
         'errorHandler' => [
             'errorAction' => 'site/error',
@@ -60,14 +70,34 @@ if (YII_ENV_DEV) {
     $config['modules']['debug'] = [
         'class' => 'yii\debug\Module',
         // uncomment the following to add your IP if you are not connecting from localhost.
-        //'allowedIPs' => ['127.0.0.1', '::1'],
+        'allowedIPs' => ['*'],
     ];
 
     $config['bootstrap'][] = 'gii';
     $config['modules']['gii'] = [
         'class' => 'yii\gii\Module',
         // uncomment the following to add your IP if you are not connecting from localhost.
-        //'allowedIPs' => ['127.0.0.1', '::1'],
+        'allowedIPs' => ['*'],
+    ];
+} else {
+    // Endurece cookies quando não for ambiente de desenvolvimento
+    $config['components']['request']['csrfCookie'] = [
+        'httpOnly' => true,
+        'secure' => true,     // exigir HTTPS em produção
+        'sameSite' => 'Lax',
+    ];
+    $config['components']['user']['identityCookie'] = [
+        'name' => '_identity',
+        'httpOnly' => true,
+        'secure' => true,     // exigir HTTPS em produção
+        'sameSite' => 'Lax',
+    ];
+    $config['components']['session'] = [
+        'cookieParams' => [
+            'httpOnly' => true,
+            'secure' => true, // exigir HTTPS em produção
+            'sameSite' => 'Lax',
+        ],
     ];
 }
 

@@ -12,6 +12,13 @@ return [
         '@bower' => '@vendor/bower-asset',
         '@npm'   => '@vendor/npm-asset',
     ],
+    // Adiciona bindings do container para que o Yii resolva os repositórios nas dependências dos UseCases
+    'container' => [
+        'definitions' => [
+            \Chiarelli\DddApp\Domain\Repository\ProductRepositoryInterface::class => \Chiarelli\DddApp\Infrastructure\Repository\YiiProductRepository::class,
+            \Chiarelli\DddApp\Domain\Repository\ProductTypeRepositoryInterface::class => \Chiarelli\DddApp\Infrastructure\Repository\YiiProductTypeRepository::class,
+        ],
+    ],
     'language' => 'en-US',
     'components' => [
         'db' => $db,

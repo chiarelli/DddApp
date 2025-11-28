@@ -1,0 +1,24 @@
+{
+  "name": "chiarelli/ddd-yii-app",
+  "description": "Aplicação PHP organizada em DDD + Yii2 (Infra) com AR, Use Cases e Repositórios.",
+  "type": "project",
+  "autoload": {
+    "psr-4": {
+      "Chiarelli\\DddApp\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Chiarelli\\DddApp\\Tests\\": "tests/"
+    }
+  },
+  "require": {
+    "php": ">=7.4.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^9.6"
+  },
+  "scripts": {
+    "test": "vendor/bin/phpunit --testdox"
+  }
+}

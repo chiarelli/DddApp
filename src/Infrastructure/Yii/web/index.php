@@ -1,8 +1,17 @@
 <?php
 
-// comment out the following two lines when deployed to production
-defined('YII_DEBUG') or define('YII_DEBUG', true);
-defined('YII_ENV') or define('YII_ENV', 'dev');
+require __DIR__ . '/../vendor/autoload.php';
+
+$dotenv = Dotenv\Dotenv::createImmutable(dirname(__DIR__));
+$dotenv->load();
+
+/*
+* O padrão é sempre "prod" e debug "false": serve para mitigar vazamento de dados sensíveis 
+* ou manipulação de funcionalidades de desenvolvimento, caso ".env" file não seja definido 
+* (ou apresente problemas de leitura) em produção.
+*/
+defined('YII_DEBUG') or define('YII_DEBUG', filter_var($_ENV['YII_DEBUG'] ?? false, FILTER_VALIDATE_BOOLEAN));
+defined('YII_ENV')   or define('YII_ENV',   $_ENV['YII_ENV']   ?? 'prod');
 
 require __DIR__ . '/../vendor/autoload.php';
 require __DIR__ . '/../vendor/yiisoft/yii2/Yii.php';
