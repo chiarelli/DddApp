@@ -13,6 +13,14 @@ $config = [
         '@npm'   => '@vendor/npm-asset',
         '@tests' => '@app/tests',
     ],
+    // Container bindings for console environment as well
+    'container' => [
+        'definitions' => [
+            \Chiarelli\DddApp\Domain\Repository\ProductRepositoryInterface::class => \Chiarelli\DddApp\Infrastructure\Repository\YiiProductRepository::class,
+            \Chiarelli\DddApp\Domain\Repository\ProductTypeRepositoryInterface::class => \Chiarelli\DddApp\Infrastructure\Repository\YiiProductTypeRepository::class,
+            \Chiarelli\DddApp\Domain\Repository\CustomerReadRepositoryInterface::class => \Chiarelli\DddApp\Infrastructure\Repository\YiiCustomerReadRepository::class,
+        ],
+    ],
     'components' => [
         'cache' => [
             'class' => 'yii\caching\FileCache',
