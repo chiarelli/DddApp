@@ -17,11 +17,11 @@ Branch: `exercise-3`
   - [x] DTOs CustomerDto, LinkedPersonDto, CustomerWithPeopleDto.
   - [x] UseCase ListCustomersWithPeopleQuery com execução stateless.
 
-- [ ] Infra
-  - [ ] Interface CustomerReadRepositoryInterface (application ou domain-ports).
-  - [ ] Implementação YiiCustomerReadRepository usando AR/joins.
-  - [ ] ARs e relations (se não existirem) CustomerAR::getPeople(), PersonAR::getCustomers().
-  - [ ] Assemblers: mapeiam AR → Domain → DTO.
+- [x] Infra
+  - [x] Interface CustomerReadRepositoryInterface (application ou domain-ports).
+  - [x] Implementação YiiCustomerReadRepository usando AR/joins.
+  - [x] ARs e relations (se não existirem) CustomerAR::getPeople(), PersonAR::getCustomers().
+  - [x] Assemblers: mapeiam AR → Domain → DTO.
 
 - [ ] Presentation
   - [ ] Controller CustomerController::actionIndex() injeta o UseCase via container.
@@ -33,8 +33,9 @@ Branch: `exercise-3`
 - [ ] Testes
   - [x] Unit para VO Age (datas limítrofes, anos bissextos).
   - [x] Executa listagem de pessoas relacionadas à customers.
+  - [x] Tests of unit for assemblers (unit)
   - [ ] Functional: acessar /customer/index e verificar estrutura/valores.
-  - [ ] Integration: repository retornando agregados com relações corretas.
+  - [x] Integration: repository retornando agregados com relações corretas.
 
 
 ## Fundamentos
