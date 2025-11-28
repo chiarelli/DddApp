@@ -10,18 +10,19 @@ class LoginFormCest
     public function openLoginPage(\FunctionalTester $I)
     {
         $I->see('Login', 'h1');
-
     }
 
-    // demonstrates `amLoggedInAs` method
+    // usa ID dinâmico do admin para o login interno
     public function internalLoginById(\FunctionalTester $I)
     {
-        $I->amLoggedInAs(100);
+        $admin = \app\models\User::findByUsername('admin');
+        $I->assertNotNull($admin, 'Admin user should exist for tests');
+        $I->amLoggedInAs((int)$admin->id);
         $I->amOnPage('/');
         $I->see('Logout (admin)');
     }
 
-    // demonstrates `amLoggedInAs` method
+    // demonstra `amLoggedInAs` com instância
     public function internalLoginByInstance(\FunctionalTester $I)
     {
         $I->amLoggedInAs(\app\models\User::findByUsername('admin'));
@@ -54,6 +55,6 @@ class LoginFormCest
             'LoginForm[password]' => 'admin',
         ]);
         $I->see('Logout (admin)');
-        $I->dontSeeElement('form#login-form');              
+        $I->dontSeeElement('form#login-form');
     }
 }
