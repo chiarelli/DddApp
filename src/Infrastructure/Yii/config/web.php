@@ -20,8 +20,10 @@ $config = [
             'class' => 'yii\caching\FileCache',
         ],
         'user' => [
+            // Agora aponta para o AR app\models\User (DB)
             'identityClass' => 'app\models\User',
             'enableAutoLogin' => true,
+            // identityCookie reforçado em produção mais abaixo
         ],
         'errorHandler' => [
             'errorAction' => 'site/error',
@@ -68,6 +70,26 @@ if (YII_ENV_DEV) {
         'class' => 'yii\gii\Module',
         // uncomment the following to add your IP if you are not connecting from localhost.
         'allowedIPs' => ['*'],
+    ];
+} else {
+    // Endurece cookies quando não for ambiente de desenvolvimento
+    $config['components']['request']['csrfCookie'] = [
+        'httpOnly' => true,
+        'secure' => true,     // exigir HTTPS em produção
+        'sameSite' => 'Lax',
+    ];
+    $config['components']['user']['identityCookie'] = [
+        'name' => '_identity',
+        'httpOnly' => true,
+        'secure' => true,     // exigir HTTPS em produção
+        'sameSite' => 'Lax',
+    ];
+    $config['components']['session'] = [
+        'cookieParams' => [
+            'httpOnly' => true,
+            'secure' => true, // exigir HTTPS em produção
+            'sameSite' => 'Lax',
+        ],
     ];
 }
 

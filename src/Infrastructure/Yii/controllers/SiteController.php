@@ -77,7 +77,8 @@ class SiteController extends Controller
 
         $model = new LoginForm();
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
-            return $this->goBack();
+            // Após login bem‑sucedido, redireciona para a tela de criação de produtos
+            return $this->redirect(['product/create']);
         }
 
         $model->password = '';
