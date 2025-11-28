@@ -23,18 +23,18 @@ Branch: `exercise-3`
   - [x] ARs e relations (se não existirem) CustomerAR::getPeople(), PersonAR::getCustomers().
   - [x] Assemblers: mapeiam AR → Domain → DTO.
 
-- [ ] Presentation
-  - [ ] Controller CustomerController::actionIndex() injeta o UseCase via container.
-  - [ ] View views/customer/index.php renderiza:
-    - [ ] Blocos por cliente: Nome completo, Data de nascimento, Idade.
-    - [ ] Tabela/lista por pessoa vinculada: Primeiro nome, Relação, Data de nascimento, Idade.
-  - [ ] Links de navegação na navbar (opcional).
+- [x] Presentation
+  - [x] Controller CustomerController::actionIndex() injeta o UseCase via container.
+  - [x] View views/customer/index.php renderiza:
+    - [x] Blocos por cliente: Nome completo, Data de nascimento, Idade.
+    - [x] Tabela/lista por pessoa vinculada: Primeiro nome, Relação, Data de nascimento, Idade.
+  - [x] Links de navegação na navbar (opcional).
 
 - [ ] Testes
   - [x] Unit para VO Age (datas limítrofes, anos bissextos).
   - [x] Executa listagem de pessoas relacionadas à customers.
   - [x] Tests of unit for assemblers (unit)
-  - [ ] Functional: acessar /customer/index e verificar estrutura/valores.
+  - [x] Functional: acessar /customer/index e verificar estrutura/valores.
   - [x] Integration: repository retornando agregados com relações corretas.
 
 
