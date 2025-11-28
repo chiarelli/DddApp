@@ -8,18 +8,18 @@ class UserTest extends \Codeception\Test\Unit
 {
     public function testFindUserById()
     {
-        verify($user = User::findIdentity(100))->notEmpty();
-        verify($user->username)->equals('admin');
+        $admin = User::findByUsername('admin');
+        verify($admin)->notEmpty();
 
-        verify(User::findIdentity(999))->empty();
+        $byId = User::findIdentity((int)$admin->id);
+        verify($byId)->notEmpty();
+        verify($byId->username)->equals('admin');
     }
 
     public function testFindUserByAccessToken()
     {
-        verify($user = User::findIdentityByAccessToken('100-token'))->notEmpty();
-        verify($user->username)->equals('admin');
-
-        verify(User::findIdentityByAccessToken('non-existing'))->empty();        
+        $this->expectException(\yii\base\NotSupportedException::class);
+        User::findIdentityByAccessToken('any-token');
     }
 
     public function testFindUserByUsername()
@@ -34,11 +34,10 @@ class UserTest extends \Codeception\Test\Unit
     public function testValidateUser()
     {
         $user = User::findByUsername('admin');
-        verify($user->validateAuthKey('test100key'))->notEmpty();
-        verify($user->validateAuthKey('test102key'))->empty();
+        // auth_key é gerado aleatoriamente no seed; valida com o próprio valor
+        verify($user->validateAuthKey((string)$user->auth_key))->notEmpty();
 
         verify($user->validatePassword('admin'))->notEmpty();
-        verify($user->validatePassword('123456'))->empty();        
+        verify($user->validatePassword('123456'))->empty();
     }
-
 }

@@ -27,7 +27,7 @@ class LoginFormTest extends \Codeception\Test\Unit
     public function testLoginWrongPassword()
     {
         $this->model = new LoginForm([
-            'username' => 'demo',
+            'username' => 'admin',
             'password' => 'wrong_password',
         ]);
 
@@ -39,13 +39,12 @@ class LoginFormTest extends \Codeception\Test\Unit
     public function testLoginCorrect()
     {
         $this->model = new LoginForm([
-            'username' => 'demo',
-            'password' => 'demo',
+            'username' => 'admin',
+            'password' => 'admin',
         ]);
 
         verify($this->model->login())->true();
         verify(\Yii::$app->user->isGuest)->false();
         verify($this->model->errors)->arrayHasNotKey('password');
     }
-
 }
