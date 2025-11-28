@@ -13,9 +13,9 @@ Branch: `exercise-3`
   - [x] VO Age com fromBirthdate(string|DateTimeInterface) e value(): int.
   - [x] Entidades Customer/Person com invariantes mínimas (nome não vazio, data válida).
 
-- [ ] Application
-  - [ ] DTOs CustomerDto, LinkedPersonDto, CustomerWithPeopleDto.
-  - [ ] UseCase ListCustomersWithPeopleQuery com execução stateless.
+- [x] Application
+  - [x] DTOs CustomerDto, LinkedPersonDto, CustomerWithPeopleDto.
+  - [x] UseCase ListCustomersWithPeopleQuery com execução stateless.
 
 - [ ] Infra
   - [ ] Interface CustomerReadRepositoryInterface (application ou domain-ports).
@@ -32,6 +32,7 @@ Branch: `exercise-3`
 
 - [ ] Testes
   - [x] Unit para VO Age (datas limítrofes, anos bissextos).
+  - [x] Executa listagem de pessoas relacionadas à customers.
   - [ ] Functional: acessar /customer/index e verificar estrutura/valores.
   - [ ] Integration: repository retornando agregados com relações corretas.
 
