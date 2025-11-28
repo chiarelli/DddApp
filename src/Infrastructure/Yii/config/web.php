@@ -52,6 +52,16 @@ $config = [
             ],
         ],
         'db' => $db,
+
+        // Habilita Pretty URLs
+        'urlManager' => [
+            'enablePrettyUrl' => true,
+            'showScriptName' => false,
+            'enableStrictParsing' => false,
+            'rules' => [
+                // regras custom podem ser adicionadas aqui se necessário
+            ],
+        ],
         /*
         'urlManager' => [
             'enablePrettyUrl' => true,
