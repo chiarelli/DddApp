@@ -7,6 +7,7 @@ use yii\web\Controller;
 use yii\filters\AccessControl;
 use yii\helpers\ArrayHelper;
 use app\models\ProductType as ProductTypeAR;
+use app\models\Product as ProductAR;
 use app\models\CreateProductForm;
 use Chiarelli\DddApp\Application\UseCase\CreateProductUseCase;
 use Chiarelli\DddApp\Application\DTO\CreateProductRequest;
@@ -31,6 +32,8 @@ class ProductController extends Controller
 
     /**
      * Exibe e processa o formulário de criação de produtos (ainda simples).
+     *
+     * Também passa a lista de produtos existente para a view para exibição em tabela.
      *
      * @return string|\yii\web\Response
      */
@@ -63,9 +66,13 @@ class ProductController extends Controller
             return $this->refresh();
         }
 
+        // Buscar produtos existentes (sem paginação), ordenando do mais recente ao mais antigo
+        $products = ProductAR::find()->with('type')->orderBy(['created_at' => SORT_DESC])->all();
+
         return $this->render('create', [
             'model' => $model,
             'types' => $types,
+            'products' => $products,
         ]);
     }
 }

@@ -2,6 +2,7 @@
 /** @var yii\web\View $this */
 /** @var app\models\CreateProductForm $model */
 /** @var array $types */
+/** @var \app\models\Product[] $products */
 
 use yii\bootstrap5\ActiveForm;
 use yii\bootstrap5\Html;
@@ -25,5 +26,41 @@ $this->title = 'Criação de Produtos';
         </div>
 
         <?php ActiveForm::end(); ?>
+    </div>
+
+    <!-- Lista de produtos criados -->
+    <div class="product-list mt-5">
+        <h2>Produtos Criados</h2>
+
+        <?php if (empty($products)): ?>
+            <p class="text-muted">Nenhum produto cadastrado ainda.</p>
+        <?php else: ?>
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered mt-3">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col">Código</th>
+                            <th scope="col">Nome</th>
+                            <th scope="col">Tipo</th>
+                            <th scope="col">Preço</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Criado em</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($products as $p): ?>
+                            <tr>
+                                <td><?= Html::encode((string)$p->code) ?></td>
+                                <td><?= Html::encode((string)$p->name) ?></td>
+                                <td><?= Html::encode($p->type->name ?? '-') ?></td>
+                                <td><?= Html::encode(number_format((float)$p->price, 2, ',', '.')) ?></td>
+                                <td><?= Html::encode((string)($p->status ?? '-')) ?></td>
+                                <td><?= Html::encode($p->created_at ? date('Y-m-d H:i:s', (int)$p->created_at) : '-') ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+        <?php endif; ?>
     </div>
 </div>
