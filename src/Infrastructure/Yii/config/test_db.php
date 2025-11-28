@@ -4,7 +4,7 @@ $db = require __DIR__ . '/db.php';
 $db = array_merge(
   $db,
   [
-    'dsn' => 'mysql:host=db;dbname=yii2',
+    'dsn' => 'mysql:host=db;dbname=yii2basic_test',
     'username' => 'yii2',
     'password' => 'yii2',
     'charset' => 'utf8',
