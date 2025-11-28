@@ -9,9 +9,9 @@ Branch: `exercise-3`
 
 ## Checklist
 
-- [ ] Domain
-  - [ ] VO Age com fromBirthdate(string|DateTimeInterface) e value(): int.
-  - [ ] Entidades Customer/Person com invariantes mínimas (nome não vazio, data válida).
+- [x] Domain
+  - [x] VO Age com fromBirthdate(string|DateTimeInterface) e value(): int.
+  - [x] Entidades Customer/Person com invariantes mínimas (nome não vazio, data válida).
 
 - [ ] Application
   - [ ] DTOs CustomerDto, LinkedPersonDto, CustomerWithPeopleDto.
@@ -31,7 +31,7 @@ Branch: `exercise-3`
   - [ ] Links de navegação na navbar (opcional).
 
 - [ ] Testes
-  - [ ] Unit para VO Age (datas limítrofes, anos bissextos).
+  - [x] Unit para VO Age (datas limítrofes, anos bissextos).
   - [ ] Functional: acessar /customer/index e verificar estrutura/valores.
   - [ ] Integration: repository retornando agregados com relações corretas.
 
