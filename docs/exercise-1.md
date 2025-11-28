@@ -20,9 +20,9 @@ Implementar tela de login + criação de produto usando DDD Lite.
 - [x] Criar UseCase `CreateProduct`
 - [ ] Criar Controller `ProductController` e views (login + create)
 - [x] Criar testes unitários para UseCase e Repository
-- [ ] Gerar Controller responsavel por view de autenticação
-- [ ] Gerar FormModel para a tela de autenticação
-- [ ] Tela de login para permitir que o usuário faça login com login e senha
+- [x] Gerar Controller responsavel por view de autenticação
+- [x] Gerar FormModel para a tela de autenticação
+- [x] Tela de login para permitir que o usuário faça login com login e senha
 - [ ] Gerar Controller responsável pela criação do produto
 - [ ] Gerar FormModel da criação de produto
 - [ ] Tela de criação de produto
@@ -73,3 +73,12 @@ Foram criados os repositórios de Domain para as entidades Product e ProductType
 #### 5. Implementar Repositories em Infra (usando AR)
 
 As interfaces foram implementadas em infra, usando os Active Records com mapeamento para entidades de domínio (e vice-versa).
+
+#### 6. Funcionalidade de autenticação
+
+Conforme requisitos do `exercise-1` sobre fluxo de autenticação, foram feitas as seguintes tarefas:
+  - Atualizado model AR Yii `User`: refatorado model AR para permitir autenticação por DB de usuário no formulário padrão da rota "site/login".
+
+  - Após login, usuário autenticado é redirecionado automaticamente para view (ainda um 'placeholder') na rota "product/create"
+
+  - View da rota "product/create" já está protegida contra acesso de usuários não autenticados.
