@@ -8,11 +8,11 @@ Criar migrações para implementar a futura funcionalidade de **permitir que usu
 
 ## Checklist
 
-- [ ] Criar migration mYYYYMMDD_HHMMSS_create_person_table:
-  - [ ] Tabela person com colunas propostas (inclui first_name, birthdate).
-- [ ] Criar migration mYYYYMMDD_HHMMSS_create_customer_person_table:
-  - [ ] Tabela customer_person (customer_id, person_id, relationship, timestamps).
-  - [ ] PK composta (customer_id, person_id) e FKs com CASCADE.
+- [x] Criar migration mYYYYMMDD_HHMMSS_create_person_table:
+  - [x] Tabela person com colunas propostas (inclui first_name, birthdate).
+- [x] Criar migration mYYYYMMDD_HHMMSS_create_customer_person_table:
+  - [x] Tabela customer_person (customer_id, person_id, relationship, timestamps).
+  - [x] PK composta (customer_id, person_id) e FKs com CASCADE.
 
 ## Fundamentos
 
