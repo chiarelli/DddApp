@@ -5,6 +5,11 @@ namespace app\controllers;
 use Yii;
 use yii\web\Controller;
 use yii\filters\AccessControl;
+use yii\helpers\ArrayHelper;
+use app\models\ProductType as ProductTypeAR;
+use app\models\CreateProductForm;
+use Chiarelli\DddApp\Application\UseCase\CreateProductUseCase;
+use Chiarelli\DddApp\Application\DTO\CreateProductRequest;
 
 class ProductController extends Controller
 {
@@ -25,12 +30,42 @@ class ProductController extends Controller
     }
 
     /**
-     * Exibe a página de criação de produtos (apenas título por enquanto).
+     * Exibe e processa o formulário de criação de produtos (ainda simples).
      *
-     * @return string
+     * @return string|\yii\web\Response
      */
     public function actionCreate()
     {
-        return $this->render('create');
+        $model = new CreateProductForm();
+
+        // Carrega lista de tipos para dropdown
+        $types = ArrayHelper::map(ProductTypeAR::find()->orderBy(['name' => SORT_ASC])->all(), 'id', 'name');
+
+        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+            // Obter o UseCase via container para respeitar injeção de dependências
+            /** @var CreateProductUseCase $useCase */
+            $useCase = Yii::$container->get(CreateProductUseCase::class);
+
+            // Preparar DTO de requisição
+            $requestDto = new CreateProductRequest(
+                $model->name,
+                (float)$model->price,
+                (int)$model->product_type_id
+            );
+
+            // Executa o caso de uso (pode lançar InvalidArgumentException em regras de domínio)
+            $response = $useCase->execute($requestDto);
+
+            // Informar sucesso e código gerado
+            Yii::$app->session->setFlash('success', "Produto criado com sucesso. Código: {$response->code}");
+
+            // Redireciona para a mesma página para limpar POST (PRG)
+            return $this->refresh();
+        }
+
+        return $this->render('create', [
+            'model' => $model,
+            'types' => $types,
+        ]);
     }
 }
