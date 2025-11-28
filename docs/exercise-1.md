@@ -16,13 +16,15 @@ Implementar tela de login + criação de produto usando DDD Lite.
 - [x] Criar migrations iniciais (product_type, product)
 - [x] Gerar AR via Gii
 - [x] Criar Domain/Repository interface
-- [ ] Implementar Repositories em Infra (usando AR)
+- [x] Implementar Repositories em Infra (usando AR)
 - [x] Criar UseCase `CreateProduct`
 - [ ] Criar Controller `ProductController` e views (login + create)
 - [x] Criar testes unitários para UseCase e Repository
-- [ ] Gerar Controllers
-- [ ] Gerar FormModels
+- [ ] Gerar Controller responsavel por view de autenticação
+- [ ] Gerar FormModel para a tela de autenticação
 - [ ] Tela de login para permitir que o usuário faça login com login e senha
+- [ ] Gerar Controller responsável pela criação do produto
+- [ ] Gerar FormModel da criação de produto
 - [ ] Tela de criação de produto
 
 ## Motivações:
@@ -67,3 +69,7 @@ Foram criados os repositórios de Domain para as entidades Product e ProductType
   - o comportamento e as invariantes do fluxo (caminho feliz, ProductType inexistente, sequência excedente), usando repositórios fake/mocks para isolar lógica de orquestração do I/O.
 
 > **Benefícios imediatos**: código testável, regras de domínio centralizadas, menor acoplamento ao framework, facilitação de futuras implementações infra (AR/DB) e de estratégias de concorrência/transação.
+
+#### 5. Implementar Repositories em Infra (usando AR)
+
+As interfaces foram implementadas em infra, usando os Active Records com mapeamento para entidades de domínio (e vice-versa).
