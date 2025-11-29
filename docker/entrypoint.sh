@@ -27,6 +27,33 @@ done
 
 echo "[entrypoint] Database is ready."
 
+# Ensure necessary directories exist and are writable for Yii and Codeception
+ensure_dirs() {
+  echo "[entrypoint] Ensuring Yii and test directories exist and are writable..."
+
+  DIRS=(
+    "src/Infrastructure/Yii/runtime"
+    "src/Infrastructure/Yii/web/assets"
+    "src/Infrastructure/Yii/tests/_output"
+    "src/Infrastructure/Yii/tests/_data"
+  )
+
+  for d in "${DIRS[@]}"; do
+    if [ ! -d "$APP_DIR/$d" ]; then
+      echo "[entrypoint] Creating directory: $d"
+      mkdir -p "$APP_DIR/$d"
+    fi
+  done
+
+  # Make them writable by web server user (www-data) and group
+  chown -R www-data:www-data "$APP_DIR/src/Infrastructure/Yii/runtime" "$APP_DIR/src/Infrastructure/Yii/web/assets" "$APP_DIR/src/Infrastructure/Yii/tests/_output" || true
+  chmod -R 0775 "$APP_DIR/src/Infrastructure/Yii/runtime" "$APP_DIR/src/Infrastructure/Yii/web/assets" "$APP_DIR/src/Infrastructure/Yii/tests/_output" || true
+
+  echo "[entrypoint] Directories prepared."
+}
+
+ensure_dirs
+
 # Run PHP unit tests (root) if binary exists
 if [ -f vendor/bin/phpunit ]; then
   echo "[entrypoint] Running root PHPUnit tests..."
@@ -34,6 +61,9 @@ if [ -f vendor/bin/phpunit ]; then
 else
   echo "[entrypoint] vendor/bin/phpunit not found — skipping root phpunit."
 fi
+
+# Before running Codeception, ensure again that test runtime dirs exist (assets might be published during functional tests)
+ensure_dirs
 
 # Run Codeception tests for the Yii subproject (if installed)
 if [ -d src/Infrastructure/Yii ] && [ -f src/Infrastructure/Yii/vendor/bin/codecept ]; then
