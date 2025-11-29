@@ -9,12 +9,17 @@ Branch: `exercise-5`
 
 ## Checklist
 
-- [ ] Migration de índices + teste functional.
-- [ ] Paginação/filtro (repo/use case/controller/view) + testes unit/functional.
-- [ ] Seed grande + functional.
-- [ ] Read-model asArray + DTOs + testes unit/functional.
-- [ ] Interface/adapter de cache + use case (FileCache) + unit/functional.
-- [ ] Behaviors de invalidação (Customer/Person/Pivot) + functional.
-- [ ] Fragment cache por seção (bloco de cliente) + functional.
-- [ ] Trocar provider para MemCache (compose + config) + smoke.
-- [ ] Observabilidade/documentação + validação final.
+- [x] Fase 1
+  - [x] Migration de índices + teste functional.
+  - [x] Paginação/filtro (repo/use case/controller/view) + testes unit/functional.
+  - [x] Seed grande + functional.
+- [ ] Fase 2
+  - [ ] Consultas menores e menos hidratação (read-model).
+  - [ ] Testes unit/functional (Read-model asArray + DTOs).
+- [ ] Fase 3
+  - [ ] Interface/adapter de cache + use case (FileCache) + unit/functional.
+  - [ ] Behaviors de invalidação (Customer/Person/Pivot) + functional.
+  - [ ] Fragment cache por seção (bloco de cliente) + functional.
+- [ ] Fase 4 (opcional)
+  - [ ] Trocar provider para MemCache (compose + config) + smoke.
+  - [ ] Observabilidade/documentação + validação final.
