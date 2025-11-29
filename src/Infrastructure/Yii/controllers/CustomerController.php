@@ -18,11 +18,23 @@ class CustomerController extends Controller
         /** @var ListCustomersWithPeopleQuery $useCase */
         $useCase = Yii::$container->get(ListCustomersWithPeopleQuery::class);
 
-        // Executa o caso de uso (retorna CustomerWithPeopleDto[])
-        $entries = $useCase->execute();
+        // Ler parâmetros de paginação/filtro da query string
+        $page = (int)(Yii::$app->request->get('page', 1));
+        $pageSize = (int)(Yii::$app->request->get('pageSize', 20));
+        $q = Yii::$app->request->get('q', null);
+
+        // Executa o caso de uso (retorna ['entries' => CustomerWithPeopleDto[], 'totalCount' => int, ...])
+        $result = $useCase->execute($page, $pageSize, $q);
+
+        $entries = $result['entries'] ?? [];
+        $totalCount = $result['totalCount'] ?? 0;
 
         return $this->render('index', [
             'entries' => $entries,
+            'totalCount' => $totalCount,
+            'page' => $page,
+            'pageSize' => $pageSize,
+            'q' => $q,
         ]);
     }
 }

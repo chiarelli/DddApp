@@ -42,16 +42,21 @@ final class ListCustomersWithPeopleQueryTest extends TestCase
             private array $rows;
             public function __construct(array $rows) { $this->rows = $rows; }
             public function findAllWithPeople(): array { return $this->rows; }
+            public function findAllWithPeoplePaginated(array $filters, int $page, int $pageSize): array { return $this->rows; }
+            public function countAll(array $filters): int { return count($this->rows); }
         };
 
         $useCase = new ListCustomersWithPeopleQuery($repo);
 
-        // Act
-        $result = $useCase->execute($reference);
+        // Act: use page=1, pageSize=20 and pass reference as last argument
+        $result = $useCase->execute(1, 20, null, $reference);
 
-        // Assert
-        $this->assertCount(1, $result);
-        $entry = $result[0];
+        // Assert structure
+        $this->assertArrayHasKey('entries', $result);
+        $this->assertArrayHasKey('totalCount', $result);
+
+        $this->assertCount(1, $result['entries']);
+        $entry = $result['entries'][0];
 
         // Customer assertions
         $this->assertSame(1, $entry->customer->id);

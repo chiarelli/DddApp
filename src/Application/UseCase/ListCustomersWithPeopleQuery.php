@@ -19,12 +19,52 @@ final class ListCustomersWithPeopleQuery
     }
 
     /**
-     * @param DateTimeInterface|null $reference Optional reference date to calculate ages deterministically in tests.
-     * @return CustomerWithPeopleDto[]
+     * Executa a query de listagem.
+     *
+     * Parâmetros:
+     *  - $page (1-based) e $pageSize definem paginação.
+     *  - $q é filtro por fullname (LIKE).
+     *  - $reference é opcional para calcular idades de forma determinística (tests).
+     *
+     * Retorna um array com chaves:
+     *  - 'entries' => CustomerWithPeopleDto[]
+     *  - 'totalCount' => int
+     *  - 'page' => int
+     *  - 'pageSize' => int
+     *
+     * Compatibilidade:
+     *  - se chamado passando apenas DateTimeInterface como primeiro arg (estilo antigo),
+     *    a função detecta e age como referência sem paginação (page=1,pageSize=20).
+     *
+     * @param int|DateTimeInterface|null $pageOrReference
+     * @param int $pageSize
+     * @param string|null $q
+     * @param DateTimeInterface|null $reference
+     * @return array
      */
-    public function execute(?DateTimeInterface $reference = null): array
+    public function execute($pageOrReference = null, int $pageSize = 20, ?string $q = null, ?DateTimeInterface $reference = null): array
     {
-        $rows = $this->readRepository->findAllWithPeople();
+        // Backwards compatibility: caller might pass DateTimeInterface as first param.
+        if ($pageOrReference instanceof DateTimeInterface) {
+            $reference = $pageOrReference;
+            $page = 1;
+            $pageSize = 20;
+            $q = null;
+        } else {
+            $page = is_int($pageOrReference) && $pageOrReference > 0 ? $pageOrReference : 1;
+        }
+
+        $filters = [];
+        if ($q !== null && trim($q) !== '') {
+            $filters['q'] = trim($q);
+        }
+
+        // total count for pagination
+        $total = $this->readRepository->countAll($filters);
+
+        // fetch paginated rows from repository
+        $rows = $this->readRepository->findAllWithPeoplePaginated($filters, $page, $pageSize);
+
         $result = [];
 
         foreach ($rows as $row) {
@@ -65,6 +105,11 @@ final class ListCustomersWithPeopleQuery
             $result[] = new CustomerWithPeopleDto($customerDto, $peopleDtos);
         }
 
-        return $result;
+        return [
+            'entries' => $result,
+            'totalCount' => $total,
+            'page' => $page,
+            'pageSize' => $pageSize,
+        ];
     }
 }
