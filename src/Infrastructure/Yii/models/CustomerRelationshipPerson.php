@@ -4,6 +4,7 @@ namespace app\models;
 
 use Yii;
 use yii\behaviors\TimestampBehavior;
+use yii\caching\TagDependency;
 
 /**
  * This is the model class for table "customer_relationship_person".
@@ -100,4 +101,45 @@ class CustomerRelationshipPerson extends \yii\db\ActiveRecord
         return $this->hasOne(Person::class, ['id' => 'person_id']);
     }
 
+    public function afterSave($insert, $changedAttributes)
+    {
+        parent::afterSave($insert, $changedAttributes);
+
+        if (!Yii::$app->has('cache')) {
+            return;
+        }
+
+        $tags = [];
+        if ($this->customer_id) {
+            $tags[] = 'link_customer_' . (int)$this->customer_id;
+        }
+        if ($this->person_id) {
+            $tags[] = 'person_' . (int)$this->person_id;
+        }
+
+        if (!empty($tags)) {
+            TagDependency::invalidate(Yii::$app->cache, $tags);
+        }
+    }
+
+    public function afterDelete()
+    {
+        parent::afterDelete();
+
+        if (!Yii::$app->has('cache')) {
+            return;
+        }
+
+        $tags = [];
+        if ($this->customer_id) {
+            $tags[] = 'link_customer_' . (int)$this->customer_id;
+        }
+        if ($this->person_id) {
+            $tags[] = 'person_' . (int)$this->person_id;
+        }
+
+        if (!empty($tags)) {
+            TagDependency::invalidate(Yii::$app->cache, $tags);
+        }
+    }
 }
