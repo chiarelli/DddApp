@@ -64,4 +64,68 @@ final class YiiCustomerReadRepository implements CustomerReadRepositoryInterface
 
         return $rows;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function findAllWithPeoplePaginated(array $filters, int $page, int $pageSize): array
+    {
+        $rows = [];
+
+        $query = CustomerAR::find()->alias('c');
+
+        // Apply fullname filter if present
+        if (!empty($filters['q'])) {
+            $q = trim((string)$filters['q']);
+            $query->andWhere(['like', 'c.fullname', $q]);
+        }
+
+        // Eager load pivot -> person to avoid N+1 for the subsequent mapping
+        $query->with(['customerRelationshipPeople.person']);
+        $query->orderBy(['c.fullname' => SORT_ASC, 'c.id' => SORT_ASC]);
+
+        $offset = max(0, ($page - 1) * $pageSize);
+        $query->offset($offset)->limit($pageSize);
+
+        $customers = $query->all();
+
+        foreach ($customers as $custAr) {
+            $customerDomain = CustomerAssembler::toDomain($custAr);
+
+            $peoplePairs = [];
+            foreach ($custAr->customerRelationshipPeople as $crp) {
+                $personAr = $crp->person;
+                if ($personAr === null) {
+                    continue;
+                }
+                $personDomain = PersonAssembler::toDomain($personAr);
+                $peoplePairs[] = [
+                    'person' => $personDomain,
+                    'relationship' => (string)$crp->relationship,
+                ];
+            }
+
+            $rows[] = [
+                'customer' => $customerDomain,
+                'people' => $peoplePairs,
+            ];
+        }
+
+        return $rows;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function countAll(array $filters): int
+    {
+        $query = CustomerAR::find()->alias('c');
+
+        if (!empty($filters['q'])) {
+            $q = trim((string)$filters['q']);
+            $query->andWhere(['like', 'c.fullname', $q]);
+        }
+
+        return (int)$query->count();
+    }
 }

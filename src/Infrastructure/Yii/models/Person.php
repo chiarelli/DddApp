@@ -4,6 +4,7 @@ namespace app\models;
 
 use Yii;
 use yii\behaviors\TimestampBehavior;
+use yii\caching\TagDependency;
 
 /**
  * This is the model class for table "person".
@@ -105,4 +106,50 @@ class Person extends \yii\db\ActiveRecord
         return $this->hasMany(Customer::class, ['id' => 'customer_id'])->viaTable('customer_relationship_person', ['person_id' => 'id']);
     }
 
+    public function afterSave($insert, $changedAttributes)
+    {
+        parent::afterSave($insert, $changedAttributes);
+
+        if (!Yii::$app->has('cache') || !$this->id) {
+            return;
+        }
+
+        $tags = ['person_' . (int)$this->id];
+
+        // Descobre customers impactados e adiciona tags de link_customer
+        $customerIds = (new \yii\db\Query())
+            ->from('{{%customer_relationship_person}}')
+            ->select('customer_id')
+            ->where(['person_id' => (int)$this->id])
+            ->column();
+
+        foreach ($customerIds as $cid) {
+            $tags[] = 'link_customer_' . (int)$cid;
+        }
+
+        TagDependency::invalidate(Yii::$app->cache, array_values(array_unique($tags)));
+    }
+
+    public function afterDelete()
+    {
+        parent::afterDelete();
+
+        if (!Yii::$app->has('cache') || !$this->id) {
+            return;
+        }
+
+        $tags = ['person_' . (int)$this->id];
+
+        $customerIds = (new \yii\db\Query())
+            ->from('{{%customer_relationship_person}}')
+            ->select('customer_id')
+            ->where(['person_id' => (int)$this->id])
+            ->column();
+
+        foreach ($customerIds as $cid) {
+            $tags[] = 'link_customer_' . (int)$cid;
+        }
+
+        TagDependency::invalidate(Yii::$app->cache, array_values(array_unique($tags)));
+    }
 }

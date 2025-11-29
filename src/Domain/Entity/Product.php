@@ -101,17 +101,20 @@ final class Product
   /**
    * Define o código já calculado externamente.
    * Regras:
-   * - 6 dígitos numéricos
-   * - prefixo (2 primeiros dígitos) deve bater com o tipo atual
+   * - formato numérico composto por prefixo + 4 dígitos de sequência
+   * - prefixo (n primeiros dígitos) deve bater com o tipo atual
    */
   public function setCode(string $code): void
   {
-    if (!preg_match('/^\d{6}$/', $code)) {
-      throw new \InvalidArgumentException('Invalid product code format. Expected 6 digits.');
+    $expectedPrefix = $this->type->getCodePrefix();
+    $expectedLength = strlen($expectedPrefix) + 4; // prefix + 4 dígitos de sequência
+
+    // valida que todo o código é numérico e tem o comprimento esperado
+    if (!preg_match('/^\d{' . $expectedLength . '}$/', $code)) {
+      throw new \InvalidArgumentException('Invalid product code format. Expected ' . $expectedLength . ' digits.');
     }
 
-    $expectedPrefix = $this->type->getCodePrefix();
-    if (substr($code, 0, 2) !== $expectedPrefix) {
+    if (substr($code, 0, strlen($expectedPrefix)) !== $expectedPrefix) {
       throw new \InvalidArgumentException('Product code prefix does not match product type.');
     }
 
@@ -128,7 +131,7 @@ final class Product
 
   /**
    * Gera o código a partir do tipo e do sequence number (> 0).
-   * Formato: %02d%04d (ex.: 01 + 0005 => 010005)
+   * Formato: {prefix}{seq_padded_4} (ex.: prefix "01" + "0005" => "010005").
    */
   public static function generateCode(ProductType $type, int $sequence): string
   {

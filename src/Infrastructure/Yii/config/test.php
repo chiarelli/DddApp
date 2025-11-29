@@ -8,6 +8,7 @@ $db = require __DIR__ . '/test_db.php';
 return [
     'id' => 'basic-tests',
     'basePath' => dirname(__DIR__),
+    'bootstrap' => ['log'],
     'aliases' => [
         '@bower' => '@vendor/bower-asset',
         '@npm'   => '@vendor/npm-asset',
@@ -18,6 +19,8 @@ return [
             \Chiarelli\DddApp\Domain\Repository\ProductRepositoryInterface::class => \Chiarelli\DddApp\Infrastructure\Repository\YiiProductRepository::class,
             \Chiarelli\DddApp\Domain\Repository\ProductTypeRepositoryInterface::class => \Chiarelli\DddApp\Infrastructure\Repository\YiiProductTypeRepository::class,
             \Chiarelli\DddApp\Domain\Repository\CustomerReadRepositoryInterface::class => \Chiarelli\DddApp\Infrastructure\Repository\YiiCustomerReadRepository::class,
+            // Cache provider binding
+            \Chiarelli\DddApp\Application\Port\CacheProviderInterface::class => \Chiarelli\DddApp\Infrastructure\Cache\YiiCacheProvider::class,
         ],
     ],
     'language' => 'en-US',
@@ -32,6 +35,10 @@ return [
         ],
         'assetManager' => [
             'basePath' => __DIR__ . '/../web/assets',
+        ],
+        // Necessário para fragment cache e invalidação por tags nos testes funcionais
+        'cache' => [
+            'class' => \yii\caching\FileCache::class,
         ],
         'urlManager' => [
             'showScriptName' => true,
