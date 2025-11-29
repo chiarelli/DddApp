@@ -3,7 +3,8 @@
 require __DIR__ . '/../vendor/autoload.php';
 
 $dotenv = Dotenv\Dotenv::createImmutable(dirname(__DIR__));
-$dotenv->load();
+// Carrega o .env somente se existir; safeLoad evita InvalidPathException quando falta o arquivo.
+$dotenv->safeLoad();
 
 /*
 * O padrão é sempre "prod" e debug "false": serve para mitigar vazamento de dados sensíveis 

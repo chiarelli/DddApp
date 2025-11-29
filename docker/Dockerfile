@@ -10,9 +10,7 @@ COPY . /app
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader
 
 # Instala dependências do sub-projeto Yii (src/Infrastructure/Yii)
-RUN if [ -f src/Infrastructure/Yii/composer.json ]; then \
-      cd src/Infrastructure/Yii && composer install --no-interaction --prefer-dist --optimize-autoloader; \
-    fi
+RUN cd src/Infrastructure/Yii && composer install --no-interaction --prefer-dist --optimize-autoloader
 
 # Stage 2: runtime - PHP Apache com extensões necessárias
 FROM php:8.2-apache
