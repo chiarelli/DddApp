@@ -19,6 +19,8 @@ $config = [
             \Chiarelli\DddApp\Domain\Repository\ProductRepositoryInterface::class => \Chiarelli\DddApp\Infrastructure\Repository\YiiProductRepository::class,
             \Chiarelli\DddApp\Domain\Repository\ProductTypeRepositoryInterface::class => \Chiarelli\DddApp\Infrastructure\Repository\YiiProductTypeRepository::class,
             \Chiarelli\DddApp\Domain\Repository\CustomerReadRepositoryInterface::class => \Chiarelli\DddApp\Infrastructure\Repository\YiiCustomerReadRepository::class,
+            // Cache provider binding
+            \Chiarelli\DddApp\Application\Port\CacheProviderInterface::class => \Chiarelli\DddApp\Infrastructure\Cache\YiiCacheProvider::class,
         ],
     ],
     'components' => [

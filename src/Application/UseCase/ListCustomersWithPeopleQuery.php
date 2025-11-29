@@ -7,15 +7,26 @@ use Chiarelli\DddApp\Application\DTO\CustomerWithPeopleDto;
 use Chiarelli\DddApp\Application\DTO\LinkedPersonDto;
 use Chiarelli\DddApp\Domain\Repository\CustomerReadRepositoryInterface;
 use Chiarelli\DddApp\Domain\ValueObject\Age;
+use Chiarelli\DddApp\Application\Port\CacheProviderInterface;
 use DateTimeInterface;
 
 final class ListCustomersWithPeopleQuery
 {
     private CustomerReadRepositoryInterface $readRepository;
+    private ?CacheProviderInterface $cacheProvider;
+    private bool $cacheEnabled;
+    private int $cacheTtl;
+    private int $pageSizeDefault;
 
-    public function __construct(CustomerReadRepositoryInterface $readRepository)
+    public function __construct(CustomerReadRepositoryInterface $readRepository, ?CacheProviderInterface $cacheProvider = null)
     {
         $this->readRepository = $readRepository;
+        $this->cacheProvider = $cacheProvider;
+
+        // Read settings from environment with safe defaults
+        $this->cacheEnabled = filter_var(getenv('CUSTOMERS_LIST_CACHE_ENABLED') ?: 'false', FILTER_VALIDATE_BOOLEAN);
+        $this->cacheTtl = (int) (getenv('CUSTOMERS_LIST_CACHE_TTL') ?: 300);
+        $this->pageSizeDefault = (int) (getenv('CUSTOMERS_LIST_PAGE_SIZE_DEFAULT') ?: 20);
     }
 
     /**
@@ -48,21 +59,104 @@ final class ListCustomersWithPeopleQuery
         if ($pageOrReference instanceof DateTimeInterface) {
             $reference = $pageOrReference;
             $page = 1;
-            $pageSize = 20;
+            $pageSize = $this->pageSizeDefault;
             $q = null;
         } else {
             $page = is_int($pageOrReference) && $pageOrReference > 0 ? $pageOrReference : 1;
         }
+
+        // normalize pageSize
+        $pageSize = $pageSize > 0 ? $pageSize : $this->pageSizeDefault;
 
         $filters = [];
         if ($q !== null && trim($q) !== '') {
             $filters['q'] = trim($q);
         }
 
-        // total count for pagination
+        // If cache is enabled and provider is available, try cache-aside
+        if ($this->cacheEnabled && $this->cacheProvider !== null) {
+            $filtersHash = md5(json_encode($filters));
+            $cacheKey = sprintf('customers:list:%s:p=%d:s=%d', $filtersHash, $page, $pageSize);
+
+            // Use rememberWithComputedTags: producer must return [value, tagsArray]
+            $cached = $this->cacheProvider->rememberWithComputedTags($cacheKey, $this->cacheTtl, function () use ($filters, $page, $pageSize, $reference) {
+                // Compute fresh result
+                $total = $this->readRepository->countAll($filters);
+                $rows = $this->readRepository->findAllWithPeoplePaginated($filters, $page, $pageSize);
+
+                // Map rows to DTOs (same logic as before)
+                $resultEntries = [];
+                $tags = [];
+
+                foreach ($rows as $row) {
+                    /** @var \Chiarelli\DddApp\Domain\Entity\Customer $customer */
+                    $customer = $row['customer'];
+                    /** @var array $peoplePairs */
+                    $peoplePairs = $row['people'] ?? [];
+
+                    $custBirth = $customer->getBirthdate();
+                    $custAge = Age::fromBirthdate($custBirth, $reference)->value();
+                    $customerDto = new CustomerDto(
+                        (int)$customer->getId(),
+                        $customer->getFullName(),
+                        $custBirth->format('Y-m-d'),
+                        $custAge
+                    );
+
+                    $peopleDtos = [];
+                    foreach ($peoplePairs as $pair) {
+                        $person = $pair['person'];
+                        $relationship = (string)($pair['relationship'] ?? '');
+
+                        $personBirth = $person->getBirthdate();
+                        $personAge = Age::fromBirthdate($personBirth, $reference)->value();
+
+                        $peopleDtos[] = new LinkedPersonDto(
+                            (int)$person->getId(),
+                            $person->getFirstName(),
+                            $person->getMiddleName(),
+                            $person->getLastName(),
+                            $personBirth->format('Y-m-d'),
+                            $personAge,
+                            $person->getGender(),
+                            $relationship
+                        );
+
+                        // add person tag
+                        if ($person->getId() !== null) {
+                            $tags[] = 'person_' . (int)$person->getId();
+                        }
+                    }
+
+                    // add customer tags
+                    if ($customer->getId() !== null) {
+                        $cid = (int)$customer->getId();
+                        $tags[] = 'customer_' . $cid;
+                        $tags[] = 'link_customer_' . $cid;
+                    }
+
+                    $resultEntries[] = new CustomerWithPeopleDto($customerDto, $peopleDtos);
+                }
+
+                // ensure tags unique
+                $tags = array_values(array_unique($tags));
+
+                $value = [
+                    'entries' => $resultEntries,
+                    'totalCount' => $total,
+                    'page' => $page,
+                    'pageSize' => $pageSize,
+                ];
+
+                return [$value, $tags];
+            });
+
+            return $cached;
+        }
+
+        // No cache path: behave as original implementation
         $total = $this->readRepository->countAll($filters);
 
-        // fetch paginated rows from repository
         $rows = $this->readRepository->findAllWithPeoplePaginated($filters, $page, $pageSize);
 
         $result = [];
