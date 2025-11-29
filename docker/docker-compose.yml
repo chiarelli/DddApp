@@ -3,6 +3,7 @@ version: '3.8'
 services:
   db:
     image: mysql:8.0
+    container_name: yii2-db
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: yii2
@@ -24,6 +25,7 @@ services:
     build:
       context: ..
       dockerfile: docker/Dockerfile
+    container_name: yii2-app
     depends_on:
       db:
         condition: service_healthy
@@ -46,3 +48,4 @@ services:
 
 volumes:
   db_data:
+    name: yii2-db-data
