@@ -26,7 +26,7 @@ RUN a2enmod rewrite
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 # Copia configuração personalizada do Apache
-COPY .devcontainer/apache.conf /etc/apache2/sites-available/yii.conf
+COPY docker/apache.conf /etc/apache2/sites-available/yii.conf
 
 # Cria usuário vscode para evitar root
 RUN useradd -ms /bin/bash vscode \

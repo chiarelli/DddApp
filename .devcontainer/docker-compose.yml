@@ -1,11 +1,11 @@
 services:
   app:
     build:
-      context: .
+      context: ..
       dockerfile: .devcontainer/Dockerfile.php
-    container_name: yii2-app
+    container_name: yii2-app-dev
     volumes:
-      - ./:/var/www/html
+      - ../:/var/www/html
     ports:
       - "8080:80"
     depends_on:
@@ -13,7 +13,7 @@ services:
 
   db:
     image: mysql:8.0
-    container_name: yii2-db
+    container_name: yii2-db-dev
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
@@ -23,7 +23,7 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - ./.devcontainer/mysql-init.sql:/docker-entrypoint-initdb.d/mysql-init.sql
+      - ../docker/mysql-init.sql:/docker-entrypoint-initdb.d/mysql-init.sql
 
   adminer:
     image: adminer

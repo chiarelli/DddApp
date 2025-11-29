@@ -1,6 +1,6 @@
 {
   "name": "Yii2 PHP DevContainer",
-  "dockerComposeFile": "../docker-compose.yml",
+  "dockerComposeFile": "./docker-compose.yml",
   "service": "app",
   "workspaceFolder": "/var/www/html",
   // Sobrescreve user para evitar permissões do root
