@@ -36,6 +36,10 @@ return [
         'assetManager' => [
             'basePath' => __DIR__ . '/../web/assets',
         ],
+        // Necessário para fragment cache e invalidação por tags nos testes funcionais
+        'cache' => [
+            'class' => \yii\caching\FileCache::class,
+        ],
         'urlManager' => [
             'showScriptName' => true,
         ],

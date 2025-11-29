@@ -11,6 +11,7 @@ use yii\helpers\Html;
 use yii\data\Pagination;
 use yii\bootstrap5\ActiveForm;
 use yii\bootstrap5\LinkPager;
+use yii\caching\TagDependency;
 
 $this->title = 'Customers & Linked People';
 ?>
@@ -36,18 +37,17 @@ $this->title = 'Customers & Linked People';
     </div>
 
     <?php
-    // Prepare pagination widget (yii\data\Pagination uses 0-based page index)
     $pagination = new Pagination([
         'totalCount' => (int)($totalCount ?? 0),
         'pageSize' => (int)($pageSize ?? 20),
     ]);
-    // If controller provided 1-based page, set it to 0-based here
     if (!empty($page) && $page > 1) {
         $pagination->setPage(max(0, $page - 1));
     }
+
+    $fragmentTtl = (int)(Yii::$app->params['customersList']['cacheTtl'] ?? 300);
     ?>
 
-    <!-- Pager (top) -->
     <?php if ($pagination->getPageCount() > 1): ?>
         <nav aria-label="Page navigation" class="mb-3">
             <?= LinkPager::widget([
@@ -62,63 +62,76 @@ $this->title = 'Customers & Linked People';
     <?php else: ?>
         <div class="row">
             <?php foreach ($entries as $entry):
-                $customer = $entry->customer; // CustomerDto
-                $people = $entry->people ?? []; // array of LinkedPersonDto
-            ?>
-                <div class="col-12 mb-4">
-                    <div class="card shadow-sm">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-start">
-                                <div>
-                                    <h5 class="card-title mb-1"><?= Html::encode($customer->fullName) ?></h5>
-                                    <p class="mb-0 text-muted">
-                                        <strong>Birthdate:</strong> <?= Html::encode($customer->birthdate) ?>
-                                        &nbsp;—&nbsp;
-                                        <strong>Age:</strong> <?= Html::encode((string)$customer->age) ?>
-                                    </p>
-                                </div>
-                                <div class="text-end">
-                                    <span class="badge bg-primary">Customer #<?= Html::encode((string)$customer->id) ?></span>
-                                </div>
-                            </div>
+                $customer = $entry->customer;
+                $people = $entry->people ?? [];
+                $cid = (int)$customer->id;
 
-                            <hr class="my-3" />
+                $cacheKey = 'customer_card_' . $cid;
 
-                            <?php if (empty($people)): ?>
-                                <p class="text-muted mb-0">Nenhuma pessoa vinculada a este customer.</p>
-                            <?php else: ?>
-                                <div class="table-responsive">
-                                    <table class="table table-sm table-striped mb-0">
-                                        <thead class="table-light">
-                                            <tr>
-                                                <th scope="col">Primeiro Nome</th>
-                                                <th scope="col">Relação</th>
-                                                <th scope="col">Birthdate</th>
-                                                <th scope="col">Age</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <?php foreach ($people as $p): ?>
+                $dependency = new TagDependency([
+                    'tags' => [
+                        'customer_' . $cid,
+                        'link_customer_' . $cid,
+                    ],
+                ]);
+
+                if ($this->beginCache($cacheKey, ['dependency' => $dependency, 'duration' => $fragmentTtl])): ?>
+                    <!-- customer_card_cached_at: <?= (string) (int) round(microtime(true) * 1000000) ?> :id=<?= Html::encode((string)$cid) ?> -->
+                    <div class="col-12 mb-4">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h5 class="card-title mb-1"><?= Html::encode($customer->fullName) ?></h5>
+                                        <p class="mb-0 text-muted">
+                                            <strong>Birthdate:</strong> <?= Html::encode($customer->birthdate) ?>
+                                            &nbsp;—&nbsp;
+                                            <strong>Age:</strong> <?= Html::encode((string)$customer->age) ?>
+                                        </p>
+                                    </div>
+                                    <div class="text-end">
+                                        <span class="badge bg-primary">Customer #<?= Html::encode((string)$customer->id) ?></span>
+                                    </div>
+                                </div>
+
+                                <hr class="my-3" />
+
+                                <?php if (empty($people)): ?>
+                                    <p class="text-muted mb-0">Nenhuma pessoa vinculada a este customer.</p>
+                                <?php else: ?>
+                                    <div class="table-responsive">
+                                        <table class="table table-sm table-striped mb-0">
+                                            <thead class="table-light">
                                                 <tr>
-                                                    <td><?= Html::encode($p->firstName) ?></td>
-                                                    <td><?= Html::encode($p->relationship) ?></td>
-                                                    <td><?= Html::encode($p->birthdate) ?></td>
-                                                    <td><?= Html::encode((string)$p->age) ?></td>
+                                                    <th scope="col">Primeiro Nome</th>
+                                                    <th scope="col">Relação</th>
+                                                    <th scope="col">Birthdate</th>
+                                                    <th scope="col">Age</th>
                                                 </tr>
-                                            <?php endforeach; ?>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            <?php endif; ?>
+                                            </thead>
+                                            <tbody>
+                                                <?php foreach ($people as $p): ?>
+                                                    <tr>
+                                                        <td><?= Html::encode($p->firstName) ?></td>
+                                                        <td><?= Html::encode($p->relationship) ?></td>
+                                                        <td><?= Html::encode($p->birthdate) ?></td>
+                                                        <td><?= Html::encode((string)$p->age) ?></td>
+                                                    </tr>
+                                                <?php endforeach; ?>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                <?php endif; ?>
 
+                            </div>
                         </div>
                     </div>
-                </div>
+                    <?php $this->endCache(); ?>
+                <?php endif; ?>
             <?php endforeach; ?>
         </div>
     <?php endif; ?>
 
-    <!-- Pager (bottom) -->
     <?php if ($pagination->getPageCount() > 1): ?>
         <nav aria-label="Page navigation" class="mt-3">
             <?= LinkPager::widget([
