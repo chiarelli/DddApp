@@ -50,8 +50,8 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
                 ],
             ];
 
-            // Customers link visible only to authenticated users
-            $menuItems[] = ['label' => 'Customers', 'url' => ['/customer/index']];
+            // Customers link visible only to authenticated users (usando rota amigável)
+            $menuItems[] = ['label' => 'Customers', 'url' => ['/customer']];
         }
 
         if (Yii::$app->user->isGuest) {

@@ -61,7 +61,9 @@ $config = [
             'showScriptName' => false,
             'enableStrictParsing' => false,
             'rules' => [
-                // regras custom podem ser adicionadas aqui se necessário
+                // rota amigável para acessar a listagem de customers sem "/index"
+                'customer' => 'customer/index',
+                // outras regras custom podem ser adicionadas aqui se necessário
             ],
         ],
     ],
