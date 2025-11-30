@@ -5,7 +5,6 @@
 **/.env.*.local
 
 # === Yii2 Basic (dentro de src/Infrastructure/Yii) ===
-src/Infrastructure/Yii/vendor/
 src/Infrastructure/Yii/runtime/
 src/Infrastructure/Yii/web/assets/
 src/Infrastructure/Yii/environments/
@@ -24,3 +23,7 @@ docker/*.pid
 
 # Ignorar configurações do VSCode
 .vscode/
+
+# Ignorar devcontainer
+.devcontainer/
+docs/
